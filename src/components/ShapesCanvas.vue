@@ -1,22 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-
-interface Circle {
-  x: number;
-  y: number;
-  type: "circle";
-  r: number;
-}
-
-interface Rect {
-  x: number;
-  y: number;
-  type: "rect";
-  width: number;
-  height: number;
-}
-
-type Shape = Circle | Rect;
+import { Shape, Circle, Rect } from "../types";
 
 const shapes = ref<Shape[]>([
   {
