@@ -1,14 +1,16 @@
+type ShapeType = "CircleEl" | "RectEl";
+
 export interface Circle {
   x: number;
   y: number;
-  type: "circle";
+  type: ShapeType;
   r: number;
 }
 
 export interface Rect {
   x: number;
   y: number;
-  type: "rect";
+  type: ShapeType;
   width: number;
   height: number;
 }

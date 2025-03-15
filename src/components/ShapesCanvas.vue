@@ -1,18 +1,25 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { Shape, Circle, Rect } from "../types";
+import CircleEl from "./CircleEl.vue";
+import RectEl from "./RectEl.vue";
+
+const components = {
+  CircleEl,
+  RectEl,
+};
 
 const shapes = ref<Shape[]>([
   {
     x: 300,
     y: 200,
-    type: "circle",
+    type: "CircleEl",
     r: 100,
   },
   {
     x: 700,
     y: 500,
-    type: "rect",
+    type: "RectEl",
     width: 200,
     height: 150,
   },
@@ -22,30 +29,12 @@ const shapes = ref<Shape[]>([
 <template>
   <div class="canvas-container">
     <svg width="1200" height="1000" class="shapes-canvas">
-      <template
+      <component
         v-for="shape in shapes"
+        :is="components[shape.type]"
+        :shape="shape"
         :key="`${shape.type}-${shape.x}-${shape.y}`"
-      >
-        <circle
-          v-if="shape.type === 'circle'"
-          :cx="shape.x"
-          :cy="shape.y"
-          :r="shape.r"
-          fill="#42b883"
-          stroke="#333"
-          stroke-width="2"
-        />
-        <rect
-          v-else-if="shape.type === 'rect'"
-          :x="shape.x"
-          :y="shape.y"
-          :width="shape.width"
-          :height="shape.height"
-          fill="#646cff"
-          stroke="#333"
-          stroke-width="2"
-        />
-      </template>
+      />
     </svg>
   </div>
 </template>
