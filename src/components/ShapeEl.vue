@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import CircleEl from "./CircleEl.vue";
 import RectEl from "./RectEl.vue";
 
@@ -30,13 +30,23 @@ const handlePointerDown = (shape: Shape, event: PointerEvent) => {
 const handlePointerUp = (shape: Shape, event: PointerEvent) => {
   emit("handlePointerUp", shape, event);
 };
+
+const x = computed(() => {
+  return props.editingPoint && props.selectedShape === props.shape
+    ? props.editingPoint.x
+    : props.shape.x;
+});
+
+const y = computed(() => {
+  return props.editingPoint && props.selectedShape === props.shape
+    ? props.editingPoint.y
+    : props.shape.y;
+});
 </script>
 
 <template>
   <g
-    :transform="`translate(${
-      editingPoint && selectedShape === shape ? editingPoint.x : shape.x
-    }, ${editingPoint && selectedShape === shape ? editingPoint.y : shape.y})`"
+    :transform="`translate(${x}, ${y})`"
     @pointermove="handlePointerMove(shape, $event)"
     @pointerdown="handlePointerDown(shape, $event)"
     @pointerup="handlePointerUp(shape, $event)"
