@@ -24,3 +24,7 @@ export interface BoundingBox {
   y2: number;
 }
 export type Shape = Circle | Rect;
+export interface Point2d {
+  x: number;
+  y: number;
+}

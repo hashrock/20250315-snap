@@ -1,8 +1,14 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { Shape, Circle, Rect } from "../types";
+import { Shape, Point2d } from "../types";
 import ShapeEl from "./ShapeEl.vue";
+import { exampleShapes } from "./shapes";
 import { calculateSnapPointX, calculateSnapPointY } from "./utils";
+
+const shapes = ref<Shape[]>(exampleShapes);
+const offset = ref<Point2d | null>(null);
+const editingPoint = ref<Point2d | null>(null);
+const selectedShape = ref<Shape | null>(null);
 
 const snapPointsX = computed(() => {
   return shapes.value
@@ -17,66 +23,6 @@ const snapPointsY = computed(() => {
     .map((shape) => calculateSnapPointY(shape))
     .reduce((acc, curr) => [...acc, ...curr], []);
 });
-const shapes = ref<Shape[]>([
-  {
-    x: 300,
-    y: 200,
-    type: "CircleEl",
-    r: 100,
-    boundingBox: {
-      x1: -100,
-      y1: -100,
-      x2: 100,
-      y2: 100,
-    },
-  },
-  {
-    x: 700,
-    y: 500,
-    type: "RectEl",
-    width: 200,
-    height: 150,
-    boundingBox: {
-      x1: 0,
-      y1: 0,
-      x2: 200,
-      y2: 150,
-    },
-  },
-  {
-    x: 1000,
-    y: 200,
-    type: "RectEl",
-    width: 125,
-    height: 225,
-    boundingBox: {
-      x1: 0,
-      y1: 0,
-      x2: 125,
-      y2: 225,
-    },
-  },
-  {
-    x: 1000,
-    y: 500,
-    type: "CircleEl",
-    r: 30,
-    boundingBox: {
-      x1: -30,
-      y1: -30,
-      x2: 30,
-      y2: 30,
-    },
-  },
-]);
-
-interface Point2d {
-  x: number;
-  y: number;
-}
-
-const offset = ref<Point2d | null>(null);
-const editingPoint = ref<Point2d | null>(null);
 
 const handlePointerMove = (shape: Shape, event: PointerEvent) => {
   if (selectedShape.value !== shape) return;
@@ -86,8 +32,6 @@ const handlePointerMove = (shape: Shape, event: PointerEvent) => {
     y: event.offsetY - offset.value.y,
   };
 };
-
-const selectedShape = ref<Shape | null>(null);
 
 const handlePointerDown = (shape: Shape, event: PointerEvent) => {
   selectedShape.value = shape;
