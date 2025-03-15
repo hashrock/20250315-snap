@@ -54,16 +54,28 @@ const shapes = ref<Shape[]>([
   },
 ]);
 
+interface Point2d {
+  x: number;
+  y: number;
+}
+
+const offset = ref<Point2d | null>(null);
+
 const handlePointerMove = (shape: Shape, event: PointerEvent) => {
   if (selectedShape.value !== shape) return;
-  shape.x += event.movementX;
-  shape.y += event.movementY;
+
+  shape.x = event.offsetX - offset.value.x;
+  shape.y = event.offsetY - offset.value.y;
 };
 
 const selectedShape = ref<Shape | null>(null);
 
 const handlePointerDown = (shape: Shape, event: PointerEvent) => {
   selectedShape.value = shape;
+  offset.value = {
+    x: event.offsetX - shape.x,
+    y: event.offsetY - shape.y,
+  };
   event.target.setPointerCapture(event.pointerId);
 };
 
