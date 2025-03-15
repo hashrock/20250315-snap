@@ -4,7 +4,6 @@ import ShapesCanvas from "./components/ShapesCanvas.vue";
 
 <template>
   <div class="app-container">
-    <h1>SVG シェイプキャンバス</h1>
     <ShapesCanvas />
   </div>
 </template>
