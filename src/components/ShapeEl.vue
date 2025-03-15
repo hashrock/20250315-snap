@@ -64,10 +64,15 @@ const smallestDistance = computed(() => {
 
 const SNAP_THRESHOLD = 10;
 
+const isSnapped = computed(() => {
+  if (props.selectedShape !== props.shape) {
+    return false;
+  }
+  return smallestDistance.value < SNAP_THRESHOLD;
+});
+
 const snappedX = computed(() => {
-  return x.value - smallestDistance.value < SNAP_THRESHOLD
-    ? x.value - smallestDistance.value
-    : x.value;
+  return isSnapped.value ? x.value - smallestDistance.value : x.value;
 });
 
 const y = computed(() => {
@@ -102,6 +107,14 @@ const y = computed(() => {
       :stroke-dasharray="selectedShape === shape ? 'none' : '5,5'"
       class="bounding-box"
     />
+    <text
+      :x="shape.boundingBox.x1"
+      :y="shape.boundingBox.y1 - 10"
+      font-size="12"
+      fill="black"
+    >
+      {{ smallestDistance }}
+    </text>
     <text
       :x="shape.boundingBox.x1"
       :y="shape.boundingBox.y1"
