@@ -2,12 +2,14 @@
 import { ref, computed } from "vue";
 import CircleEl from "./CircleEl.vue";
 import RectEl from "./RectEl.vue";
-import { calculateSnapPointX } from "./utils";
+import { calculateSnapPointX, calculateSnapPointY } from "./utils";
+
 const props = defineProps<{
   shape: Shape;
   editingPoint: Point2d | null;
   selectedShape: Shape | null;
   snapPointsX: number[];
+  snapPointsY: number[];
 }>();
 const components = {
   CircleEl,
@@ -38,6 +40,12 @@ const x = computed(() => {
     : props.shape.x;
 });
 
+const y = computed(() => {
+  return props.editingPoint && props.selectedShape === props.shape
+    ? props.editingPoint.y
+    : props.shape.y;
+});
+
 const mySnapPointsX = computed(() => {
   return calculateSnapPointX({
     ...props.shape,
@@ -46,7 +54,17 @@ const mySnapPointsX = computed(() => {
   });
 });
 
-const offsetList = computed(() => {
+// Y座標のスナップポイントも同様に計算
+const mySnapPointsY = computed(() => {
+  // X座標と同じ関数を使用していますが、必要に応じてcalculateSnapPointYを使用してください
+  return calculateSnapPointY({
+    ...props.shape,
+    x: props.editingPoint?.x || props.shape.x,
+    y: props.editingPoint?.y || props.shape.y,
+  });
+});
+
+const offsetListX = computed(() => {
   const all = props.snapPointsX.map((snapPoint) => {
     return mySnapPointsX.value.map((mySnapPoint) => {
       return mySnapPoint - snapPoint;
@@ -56,14 +74,29 @@ const offsetList = computed(() => {
   return all.flat().map((i) => i.toFixed(2));
 });
 
-const smallestOffset = computed(() => {
-  if (offsetList.value.length === 0) return 0;
+// Y座標のオフセットリストを計算
+const offsetListY = computed(() => {
+  // snapPointsYが空配列の場合も安全に処理
+  if (!props.snapPointsY.length) return [];
+
+  const all = props.snapPointsY.map((snapPoint) => {
+    return mySnapPointsY.value.map((mySnapPoint) => {
+      return mySnapPoint - snapPoint;
+    });
+  });
+
+  return all.flat().map((i) => i.toFixed(2));
+});
+
+// X座標の最小オフセットを計算する関数
+const calculateSmallestOffset = (offsetList: string[]) => {
+  if (offsetList.length === 0) return 0;
 
   // 絶対値が最小の値を探し、元の符号を保持する
   let minAbs = Infinity;
   let minOffset = 0;
 
-  offsetList.value.forEach((offsetStr) => {
+  offsetList.forEach((offsetStr) => {
     const offset = parseFloat(offsetStr);
     const absOffset = Math.abs(offset);
 
@@ -74,31 +107,44 @@ const smallestOffset = computed(() => {
   });
 
   return minOffset;
+};
+
+const smallestOffsetX = computed(() => {
+  return calculateSmallestOffset(offsetListX.value);
+});
+
+const smallestOffsetY = computed(() => {
+  return calculateSmallestOffset(offsetListY.value);
 });
 
 const SNAP_THRESHOLD = 10;
 
-const isSnapped = computed(() => {
+const isSnappedX = computed(() => {
   if (props.selectedShape !== props.shape) {
     return false;
   }
-  return Math.abs(smallestOffset.value) < SNAP_THRESHOLD;
+  return Math.abs(smallestOffsetX.value) < SNAP_THRESHOLD;
+});
+
+const isSnappedY = computed(() => {
+  if (props.selectedShape !== props.shape) {
+    return false;
+  }
+  return Math.abs(smallestOffsetY.value) < SNAP_THRESHOLD;
 });
 
 const snappedX = computed(() => {
-  return isSnapped.value ? x.value - smallestOffset.value : x.value;
+  return isSnappedX.value ? x.value - smallestOffsetX.value : x.value;
 });
 
-const y = computed(() => {
-  return props.editingPoint && props.selectedShape === props.shape
-    ? props.editingPoint.y
-    : props.shape.y;
+const snappedY = computed(() => {
+  return isSnappedY.value ? y.value - smallestOffsetY.value : y.value;
 });
 </script>
 
 <template>
   <g
-    :transform="`translate(${snappedX}, ${y})`"
+    :transform="`translate(${snappedX}, ${snappedY})`"
     @pointermove="handlePointerMove(shape, $event)"
     @pointerdown="handlePointerDown(shape, $event)"
     @pointerup="handlePointerUp(shape, $event)"
@@ -123,19 +169,20 @@ const y = computed(() => {
     />
     <text
       :x="shape.boundingBox.x1"
-      :y="shape.boundingBox.y1 - 10"
+      :y="shape.boundingBox.y1 - 20"
       font-size="12"
       fill="black"
     >
-      {{ smallestOffset }}
+      X: {{ smallestOffsetX }} Y: {{ smallestOffsetY }}
     </text>
     <text
       :x="shape.boundingBox.x1"
-      :y="shape.boundingBox.y1"
+      :y="shape.boundingBox.y1 - 5"
       font-size="12"
       fill="black"
     >
-      {{ offsetList }}
+      X: {{ isSnappedX ? "スナップ中" : "未スナップ" }} Y:
+      {{ isSnappedY ? "スナップ中" : "未スナップ" }}
     </text>
   </g>
 </template>

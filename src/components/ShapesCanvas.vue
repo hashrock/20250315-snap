@@ -2,7 +2,7 @@
 import { ref, computed } from "vue";
 import { Shape, Circle, Rect } from "../types";
 import ShapeEl from "./ShapeEl.vue";
-import { calculateSnapPointX } from "./utils";
+import { calculateSnapPointX, calculateSnapPointY } from "./utils";
 
 const snapPointsX = computed(() => {
   return shapes.value
@@ -11,6 +11,12 @@ const snapPointsX = computed(() => {
     .reduce((acc, curr) => [...acc, ...curr], []);
 });
 
+const snapPointsY = computed(() => {
+  return shapes.value
+    .filter((shape) => selectedShape.value !== shape)
+    .map((shape) => calculateSnapPointY(shape))
+    .reduce((acc, curr) => [...acc, ...curr], []);
+});
 const shapes = ref<Shape[]>([
   {
     x: 300,
@@ -93,6 +99,16 @@ const handlePointerUp = (shape: Shape, event: PointerEvent) => {
           opacity="0.1"
         />
       </g>
+      <g v-for="snapPoint in snapPointsY">
+        <line
+          :x1="0"
+          :y1="snapPoint"
+          :x2="1200"
+          :y2="snapPoint"
+          stroke="black"
+          opacity="0.1"
+        />
+      </g>
       <ShapeEl
         v-for="shape in shapes"
         :shape="shape"
@@ -100,6 +116,7 @@ const handlePointerUp = (shape: Shape, event: PointerEvent) => {
         :editingPoint="editingPoint"
         :selectedShape="selectedShape"
         :snapPointsX="snapPointsX"
+        :snapPointsY="snapPointsY"
         @handlePointerMove="handlePointerMove"
         @handlePointerDown="handlePointerDown"
         @handlePointerUp="handlePointerUp"
