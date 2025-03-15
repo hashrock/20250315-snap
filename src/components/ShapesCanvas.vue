@@ -1,13 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { Shape, Circle, Rect } from "../types";
-import CircleEl from "./CircleEl.vue";
-import RectEl from "./RectEl.vue";
-
-const components = {
-  CircleEl,
-  RectEl,
-};
+import ShapeEl from "./ShapeEl.vue";
 
 function calculateSnapPointX(shape: Shape) {
   const result = [];
@@ -108,37 +102,16 @@ const handlePointerUp = (shape: Shape, event: PointerEvent) => {
           opacity="0.1"
         />
       </g>
-
-      <g
+      <ShapeEl
         v-for="shape in shapes"
-        :transform="`translate(${
-          editingPoint && selectedShape === shape ? editingPoint.x : shape.x
-        }, ${
-          editingPoint && selectedShape === shape ? editingPoint.y : shape.y
-        })`"
-        @pointermove="handlePointerMove(shape, $event)"
-        @pointerdown="handlePointerDown(shape, $event)"
-        @pointerup="handlePointerUp(shape, $event)"
-      >
-        <component
-          :is="components[shape.type]"
-          :shape="shape"
-          :key="`${shape.type}-${shape.x}-${shape.y}`"
-        />
-
-        <!-- バウンディングボックス -->
-        <rect
-          :x="shape.boundingBox.x1"
-          :y="shape.boundingBox.y1"
-          :width="shape.boundingBox.x2 - shape.boundingBox.x1"
-          :height="shape.boundingBox.y2 - shape.boundingBox.y1"
-          fill="none"
-          stroke="#4287f5"
-          stroke-width="2"
-          :stroke-dasharray="selectedShape === shape ? 'none' : '5,5'"
-          class="bounding-box"
-        />
-      </g>
+        :shape="shape"
+        :key="`${shape.type}-${shape.x}-${shape.y}`"
+        :editingPoint="editingPoint"
+        :selectedShape="selectedShape"
+        @handlePointerMove="handlePointerMove"
+        @handlePointerDown="handlePointerDown"
+        @handlePointerUp="handlePointerUp"
+      />
     </svg>
   </div>
 </template>
