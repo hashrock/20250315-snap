@@ -60,12 +60,15 @@ interface Point2d {
 }
 
 const offset = ref<Point2d | null>(null);
+const editingPoint = ref<Point2d | null>(null);
 
 const handlePointerMove = (shape: Shape, event: PointerEvent) => {
   if (selectedShape.value !== shape) return;
 
-  shape.x = event.offsetX - offset.value.x;
-  shape.y = event.offsetY - offset.value.y;
+  editingPoint.value = {
+    x: event.offsetX - offset.value.x,
+    y: event.offsetY - offset.value.y,
+  };
 };
 
 const selectedShape = ref<Shape | null>(null);
@@ -80,7 +83,14 @@ const handlePointerDown = (shape: Shape, event: PointerEvent) => {
 };
 
 const handlePointerUp = (shape: Shape, event: PointerEvent) => {
+  if (editingPoint.value) {
+    shape.x = editingPoint.value.x;
+    shape.y = editingPoint.value.y;
+  }
+
   selectedShape.value = null;
+  editingPoint.value = null;
+
   event.target.releasePointerCapture(event.pointerId);
 };
 </script>
@@ -101,7 +111,11 @@ const handlePointerUp = (shape: Shape, event: PointerEvent) => {
 
       <g
         v-for="shape in shapes"
-        :transform="`translate(${shape.x}, ${shape.y})`"
+        :transform="`translate(${
+          editingPoint && selectedShape === shape ? editingPoint.x : shape.x
+        }, ${
+          editingPoint && selectedShape === shape ? editingPoint.y : shape.y
+        })`"
         @pointermove="handlePointerMove(shape, $event)"
         @pointerdown="handlePointerDown(shape, $event)"
         @pointerup="handlePointerUp(shape, $event)"
