@@ -5,6 +5,7 @@ export interface Circle {
   y: number;
   type: ShapeType;
   r: number;
+  boundingBox: BoundingBox;
 }
 
 export interface Rect {
@@ -13,6 +14,7 @@ export interface Rect {
   type: ShapeType;
   width: number;
   height: number;
+  boundingBox: BoundingBox;
 }
 
 export interface BoundingBox {

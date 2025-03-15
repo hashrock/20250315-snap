@@ -2,16 +2,7 @@
 import { ref, computed } from "vue";
 import { Shape, Circle, Rect } from "../types";
 import ShapeEl from "./ShapeEl.vue";
-
-function calculateSnapPointX(shape: Shape) {
-  const result = [];
-
-  result.push(shape.x + shape.boundingBox.x1);
-  result.push(shape.x + shape.boundingBox.x2);
-  result.push(shape.x + (shape.boundingBox.x1 + shape.boundingBox.x2) / 2);
-
-  return result;
-}
+import { calculateSnapPointX } from "./utils";
 
 const snapPointsX = computed(() => {
   return shapes.value
@@ -108,6 +99,7 @@ const handlePointerUp = (shape: Shape, event: PointerEvent) => {
         :key="`${shape.type}-${shape.x}-${shape.y}`"
         :editingPoint="editingPoint"
         :selectedShape="selectedShape"
+        :snapPointsX="snapPointsX"
         @handlePointerMove="handlePointerMove"
         @handlePointerDown="handlePointerDown"
         @handlePointerUp="handlePointerUp"
