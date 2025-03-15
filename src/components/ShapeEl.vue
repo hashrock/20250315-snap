@@ -167,22 +167,5 @@ const snappedY = computed(() => {
       :stroke-dasharray="selectedShape === shape ? 'none' : '5,5'"
       class="bounding-box"
     />
-    <text
-      :x="shape.boundingBox.x1"
-      :y="shape.boundingBox.y1 - 20"
-      font-size="12"
-      fill="black"
-    >
-      X: {{ smallestOffsetX }} Y: {{ smallestOffsetY }}
-    </text>
-    <text
-      :x="shape.boundingBox.x1"
-      :y="shape.boundingBox.y1 - 5"
-      font-size="12"
-      fill="black"
-    >
-      X: {{ isSnappedX ? "スナップ中" : "未スナップ" }} Y:
-      {{ isSnappedY ? "スナップ中" : "未スナップ" }}
-    </text>
   </g>
 </template>
