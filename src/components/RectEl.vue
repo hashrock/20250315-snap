@@ -7,8 +7,8 @@ defineProps<{
 </script>
 <template>
   <rect
-    :x="shape.x"
-    :y="shape.y"
+    x="0"
+    y="0"
     :width="shape.width"
     :height="shape.height"
     fill="#646cff"

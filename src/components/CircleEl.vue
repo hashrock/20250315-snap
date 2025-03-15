@@ -8,8 +8,8 @@ defineProps<{
 
 <template>
   <circle
-    :cx="shape.x"
-    :cy="shape.y"
+    cx="0"
+    cy="0"
     :r="shape.r"
     fill="#42b883"
     stroke="#333"

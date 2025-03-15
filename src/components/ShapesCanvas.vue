@@ -29,12 +29,16 @@ const shapes = ref<Shape[]>([
 <template>
   <div class="canvas-container">
     <svg width="1200" height="1000" class="shapes-canvas">
-      <component
+      <g
         v-for="shape in shapes"
-        :is="components[shape.type]"
-        :shape="shape"
-        :key="`${shape.type}-${shape.x}-${shape.y}`"
-      />
+        :transform="`translate(${shape.x}, ${shape.y})`"
+      >
+        <component
+          :is="components[shape.type]"
+          :shape="shape"
+          :key="`${shape.type}-${shape.x}-${shape.y}`"
+        />
+      </g>
     </svg>
   </div>
 </template>
