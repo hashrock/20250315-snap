@@ -12,7 +12,7 @@ import ShapesCanvas from "./components/ShapesCanvas.vue";
 .app-container {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
   text-align: center;
 }
 
