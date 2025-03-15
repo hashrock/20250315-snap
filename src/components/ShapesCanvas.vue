@@ -15,6 +15,12 @@ const shapes = ref<Shape[]>([
     y: 200,
     type: "CircleEl",
     r: 100,
+    boundingBox: {
+      x: -100,
+      y: -100,
+      width: 200,
+      height: 200,
+    },
   },
   {
     x: 700,
@@ -22,6 +28,12 @@ const shapes = ref<Shape[]>([
     type: "RectEl",
     width: 200,
     height: 150,
+    boundingBox: {
+      x: 0,
+      y: 0,
+      width: 200,
+      height: 150,
+    },
   },
 ]);
 </script>
@@ -38,6 +50,19 @@ const shapes = ref<Shape[]>([
           :shape="shape"
           :key="`${shape.type}-${shape.x}-${shape.y}`"
         />
+
+        <!-- バウンディングボックス -->
+        <rect
+          :x="shape.boundingBox.x"
+          :y="shape.boundingBox.y"
+          :width="shape.boundingBox.width"
+          :height="shape.boundingBox.height"
+          fill="none"
+          stroke="#4287f5"
+          stroke-width="2"
+          stroke-dasharray="5,5"
+          class="bounding-box"
+        />
       </g>
     </svg>
   </div>
@@ -53,5 +78,9 @@ const shapes = ref<Shape[]>([
 
 .shapes-canvas {
   background-color: #f9f9f9;
+}
+
+.bounding-box {
+  pointer-events: none;
 }
 </style>
