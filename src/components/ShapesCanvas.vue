@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { Shape, Circle, Rect } from "../types";
 import CircleEl from "./CircleEl.vue";
 import RectEl from "./RectEl.vue";
@@ -9,6 +9,23 @@ const components = {
   RectEl,
 };
 
+function calculateSnapPointX(shape: Shape) {
+  const result = [];
+
+  result.push(shape.x + shape.boundingBox.x1);
+  result.push(shape.x + shape.boundingBox.x2);
+  result.push(shape.x + (shape.boundingBox.x1 + shape.boundingBox.x2) / 2);
+
+  return result;
+}
+
+const snapPointsX = computed(() => {
+  return shapes.value
+    .filter((shape) => selectedShape.value !== shape)
+    .map((shape) => calculateSnapPointX(shape))
+    .reduce((acc, curr) => [...acc, ...curr], []);
+});
+
 const shapes = ref<Shape[]>([
   {
     x: 300,
@@ -16,10 +33,10 @@ const shapes = ref<Shape[]>([
     type: "CircleEl",
     r: 100,
     boundingBox: {
-      x: -100,
-      y: -100,
-      width: 200,
-      height: 200,
+      x1: -100,
+      y1: -100,
+      x2: 100,
+      y2: 100,
     },
   },
   {
@@ -29,10 +46,10 @@ const shapes = ref<Shape[]>([
     width: 200,
     height: 150,
     boundingBox: {
-      x: 0,
-      y: 0,
-      width: 200,
-      height: 150,
+      x1: 0,
+      y1: 0,
+      x2: 200,
+      y2: 150,
     },
   },
 ]);
@@ -59,6 +76,17 @@ const handlePointerUp = (shape: Shape, event: PointerEvent) => {
 <template>
   <div class="canvas-container">
     <svg width="1200" height="1000" class="shapes-canvas">
+      <g v-for="snapPoint in snapPointsX">
+        <line
+          :x1="snapPoint"
+          y1="0"
+          :x2="snapPoint"
+          y2="1000"
+          stroke="black"
+          opacity="0.1"
+        />
+      </g>
+
       <g
         v-for="shape in shapes"
         :transform="`translate(${shape.x}, ${shape.y})`"
@@ -74,10 +102,10 @@ const handlePointerUp = (shape: Shape, event: PointerEvent) => {
 
         <!-- バウンディングボックス -->
         <rect
-          :x="shape.boundingBox.x"
-          :y="shape.boundingBox.y"
-          :width="shape.boundingBox.width"
-          :height="shape.boundingBox.height"
+          :x="shape.boundingBox.x1"
+          :y="shape.boundingBox.y1"
+          :width="shape.boundingBox.x2 - shape.boundingBox.x1"
+          :height="shape.boundingBox.y2 - shape.boundingBox.y1"
           fill="none"
           stroke="#4287f5"
           stroke-width="2"

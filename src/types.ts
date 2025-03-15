@@ -15,4 +15,10 @@ export interface Rect {
   height: number;
 }
 
+export interface BoundingBox {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+}
 export type Shape = Circle | Rect;
