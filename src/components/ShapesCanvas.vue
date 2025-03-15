@@ -43,6 +43,31 @@ const shapes = ref<Shape[]>([
       y2: 150,
     },
   },
+  {
+    x: 1000,
+    y: 200,
+    type: "RectEl",
+    width: 125,
+    height: 225,
+    boundingBox: {
+      x1: 0,
+      y1: 0,
+      x2: 125,
+      y2: 225,
+    },
+  },
+  {
+    x: 1000,
+    y: 500,
+    type: "CircleEl",
+    r: 30,
+    boundingBox: {
+      x1: -30,
+      y1: -30,
+      x2: 30,
+      y2: 30,
+    },
+  },
 ]);
 
 interface Point2d {
@@ -73,10 +98,14 @@ const handlePointerDown = (shape: Shape, event: PointerEvent) => {
   event.target.setPointerCapture(event.pointerId);
 };
 
-const handlePointerUp = (shape: Shape, event: PointerEvent) => {
+const handlePointerUp = (
+  shape: Shape,
+  event: PointerEvent,
+  newPoint: Point2d
+) => {
   if (editingPoint.value) {
-    shape.x = editingPoint.value.x;
-    shape.y = editingPoint.value.y;
+    shape.x = newPoint.x;
+    shape.y = newPoint.y;
   }
 
   selectedShape.value = null;

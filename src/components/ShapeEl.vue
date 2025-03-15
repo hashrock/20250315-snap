@@ -30,8 +30,12 @@ const handlePointerDown = (shape: Shape, event: PointerEvent) => {
   emit("handlePointerDown", shape, event);
 };
 
-const handlePointerUp = (shape: Shape, event: PointerEvent) => {
-  emit("handlePointerUp", shape, event);
+const handlePointerUp = (
+  shape: Shape,
+  event: PointerEvent,
+  newPoint: Point2d
+) => {
+  emit("handlePointerUp", shape, event, newPoint);
 };
 
 const x = computed(() => {
@@ -147,7 +151,7 @@ const snappedY = computed(() => {
     :transform="`translate(${snappedX}, ${snappedY})`"
     @pointermove="handlePointerMove(shape, $event)"
     @pointerdown="handlePointerDown(shape, $event)"
-    @pointerup="handlePointerUp(shape, $event)"
+    @pointerup="handlePointerUp(shape, $event, { x: snappedX, y: snappedY })"
   >
     <component
       :is="components[shape.type]"
