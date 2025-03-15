@@ -46,7 +46,7 @@ const mySnapPointsX = computed(() => {
   });
 });
 
-const distanceList = computed(() => {
+const offsetList = computed(() => {
   const all = props.snapPointsX.map((snapPoint) => {
     return mySnapPointsX.value.map((mySnapPoint) => {
       return mySnapPoint - snapPoint;
@@ -56,10 +56,24 @@ const distanceList = computed(() => {
   return all.flat().map((i) => i.toFixed(2));
 });
 
-const smallestDistance = computed(() => {
-  return distanceList.value.reduce((acc, curr) => {
-    return Math.min(acc, Math.abs(curr));
-  }, Infinity);
+const smallestOffset = computed(() => {
+  if (offsetList.value.length === 0) return 0;
+
+  // 絶対値が最小の値を探し、元の符号を保持する
+  let minAbs = Infinity;
+  let minOffset = 0;
+
+  offsetList.value.forEach((offsetStr) => {
+    const offset = parseFloat(offsetStr);
+    const absOffset = Math.abs(offset);
+
+    if (absOffset < minAbs) {
+      minAbs = absOffset;
+      minOffset = offset;
+    }
+  });
+
+  return minOffset;
 });
 
 const SNAP_THRESHOLD = 10;
@@ -68,11 +82,11 @@ const isSnapped = computed(() => {
   if (props.selectedShape !== props.shape) {
     return false;
   }
-  return smallestDistance.value < SNAP_THRESHOLD;
+  return Math.abs(smallestOffset.value) < SNAP_THRESHOLD;
 });
 
 const snappedX = computed(() => {
-  return isSnapped.value ? x.value - smallestDistance.value : x.value;
+  return isSnapped.value ? x.value - smallestOffset.value : x.value;
 });
 
 const y = computed(() => {
@@ -113,7 +127,7 @@ const y = computed(() => {
       font-size="12"
       fill="black"
     >
-      {{ smallestDistance }}
+      {{ smallestOffset }}
     </text>
     <text
       :x="shape.boundingBox.x1"
@@ -121,7 +135,7 @@ const y = computed(() => {
       font-size="12"
       fill="black"
     >
-      {{ distanceList }}
+      {{ offsetList }}
     </text>
   </g>
 </template>
