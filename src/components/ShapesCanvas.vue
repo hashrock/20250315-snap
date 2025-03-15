@@ -38,12 +38,21 @@ const shapes = ref<Shape[]>([
 ]);
 
 const handlePointerMove = (shape: Shape, event: PointerEvent) => {
-  if (event.buttons === 1) {
-    shape.x += event.movementX;
-    shape.y += event.movementY;
-    const el = event.target as SVGElement;
-    el.setPointerCapture(event.pointerId);
-  }
+  if (selectedShape.value !== shape) return;
+  shape.x += event.movementX;
+  shape.y += event.movementY;
+};
+
+const selectedShape = ref<Shape | null>(null);
+
+const handlePointerDown = (shape: Shape, event: PointerEvent) => {
+  selectedShape.value = shape;
+  event.target.setPointerCapture(event.pointerId);
+};
+
+const handlePointerUp = (shape: Shape, event: PointerEvent) => {
+  selectedShape.value = null;
+  event.target.releasePointerCapture(event.pointerId);
 };
 </script>
 
@@ -54,6 +63,8 @@ const handlePointerMove = (shape: Shape, event: PointerEvent) => {
         v-for="shape in shapes"
         :transform="`translate(${shape.x}, ${shape.y})`"
         @pointermove="handlePointerMove(shape, $event)"
+        @pointerdown="handlePointerDown(shape, $event)"
+        @pointerup="handlePointerUp(shape, $event)"
       >
         <component
           :is="components[shape.type]"
@@ -70,7 +81,7 @@ const handlePointerMove = (shape: Shape, event: PointerEvent) => {
           fill="none"
           stroke="#4287f5"
           stroke-width="2"
-          stroke-dasharray="5,5"
+          :stroke-dasharray="selectedShape === shape ? 'none' : '5,5'"
           class="bounding-box"
         />
       </g>
