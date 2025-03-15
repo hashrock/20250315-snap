@@ -36,6 +36,15 @@ const shapes = ref<Shape[]>([
     },
   },
 ]);
+
+const handlePointerMove = (shape: Shape, event: PointerEvent) => {
+  if (event.buttons === 1) {
+    shape.x += event.movementX;
+    shape.y += event.movementY;
+    const el = event.target as SVGElement;
+    el.setPointerCapture(event.pointerId);
+  }
+};
 </script>
 
 <template>
@@ -44,6 +53,7 @@ const shapes = ref<Shape[]>([
       <g
         v-for="shape in shapes"
         :transform="`translate(${shape.x}, ${shape.y})`"
+        @pointermove="handlePointerMove(shape, $event)"
       >
         <component
           :is="components[shape.type]"
