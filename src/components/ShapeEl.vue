@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { computed } from "vue";
 import CircleEl from "./CircleEl.vue";
 import RectEl from "./RectEl.vue";
 import { calculateSnapPointX, calculateSnapPointY } from "./utils";
+import type { Shape, Point2d } from "../types";
 
 const props = defineProps<{
   shape: Shape;
@@ -11,15 +12,11 @@ const props = defineProps<{
   snapPointsX: number[];
   snapPointsY: number[];
 }>();
-const components = {
-  CircleEl,
-  RectEl,
-};
 
 const emit = defineEmits<{
   (e: "handlePointerMove", shape: Shape, event: PointerEvent): void;
   (e: "handlePointerDown", shape: Shape, event: PointerEvent): void;
-  (e: "handlePointerUp", shape: Shape, event: PointerEvent): void;
+  (e: "handlePointerUp", shape: Shape, event: PointerEvent, newPoint: Point2d): void;
 }>();
 
 const handlePointerMove = (shape: Shape, event: PointerEvent) => {
@@ -153,11 +150,8 @@ const snappedY = computed(() => {
     @pointerdown="handlePointerDown(shape, $event)"
     @pointerup="handlePointerUp(shape, $event, { x: snappedX, y: snappedY })"
   >
-    <component
-      :is="components[shape.type]"
-      :shape="shape"
-      :key="`${shape.type}-${shape.x}-${shape.y}`"
-    />
+    <CircleEl v-if="shape.type === 'CircleEl'" :shape="shape as any" />
+    <RectEl v-else-if="shape.type === 'RectEl'" :shape="shape as any" />
 
     <!-- バウンディングボックス -->
     <rect

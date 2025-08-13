@@ -1,4 +1,6 @@
-export const exampleShapes = [
+import type { Shape } from "../types";
+
+export const exampleShapes: Shape[] = [
   {
     x: 300,
     y: 200,

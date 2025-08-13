@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { Shape, Point2d } from "../types";
+import type { Shape, Point2d } from "../types";
 import ShapeEl from "./ShapeEl.vue";
 import { exampleShapes } from "./shapes";
 import { calculateSnapPointX, calculateSnapPointY } from "./utils";
@@ -27,10 +27,12 @@ const snapPointsY = computed(() => {
 const handlePointerMove = (shape: Shape, event: PointerEvent) => {
   if (selectedShape.value !== shape) return;
 
-  editingPoint.value = {
-    x: event.offsetX - offset.value.x,
-    y: event.offsetY - offset.value.y,
-  };
+  if (offset.value) {
+    editingPoint.value = {
+      x: event.offsetX - offset.value.x,
+      y: event.offsetY - offset.value.y,
+    };
+  }
 };
 
 const handlePointerDown = (shape: Shape, event: PointerEvent) => {
@@ -39,7 +41,9 @@ const handlePointerDown = (shape: Shape, event: PointerEvent) => {
     x: event.offsetX - shape.x,
     y: event.offsetY - shape.y,
   };
-  event.target.setPointerCapture(event.pointerId);
+  if (event.target) {
+    (event.target as Element).setPointerCapture(event.pointerId);
+  }
 };
 
 const handlePointerUp = (
@@ -55,7 +59,9 @@ const handlePointerUp = (
   selectedShape.value = null;
   editingPoint.value = null;
 
-  event.target.releasePointerCapture(event.pointerId);
+  if (event.target) {
+    (event.target as Element).releasePointerCapture(event.pointerId);
+  }
 };
 </script>
 

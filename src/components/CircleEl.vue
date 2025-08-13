@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Shape } from "../types";
+import type { Circle } from "../types";
 
 defineProps<{
   shape: Circle;
